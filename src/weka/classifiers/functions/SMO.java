@@ -292,6 +292,9 @@ public class SMO
     /** The training data. */
     protected Instances m_data;
 
+    /** Cached training data */
+    protected double[][] m_data_raw;
+
     /** Weight vector for linear machine. */
     protected double[] m_weights;
 
@@ -444,6 +447,7 @@ public class SMO
       m_alpha = null; m_data = null; m_weights = null; m_errors = null;
       m_logistic = null; m_I0 = null; m_I1 = null; m_I2 = null;
       m_I3 = null; m_I4 = null;	m_sparseWeights = null; m_sparseIndices = null;
+      m_data_raw = null;
 
       // Store the sum of weights
       m_sumOfWeights = insts.sumOfWeights();
@@ -490,6 +494,13 @@ public class SMO
       
       // Set the reference to the data
       m_data = insts;
+      // Cache data
+      if(insts.size() > 0 && insts.instance(0) instanceof DenseInstance) {
+    	  m_data_raw = new double[insts.size()][];
+    	  for(int i=0; i<m_data_raw.length; i++) {
+    		  m_data_raw[i] = insts.instance(i).toDoubleArray();
+    	  }
+      }
 
       // If machine is linear, reserve space for weights
       if (m_KernelIsLinear) {
@@ -598,6 +609,7 @@ public class SMO
 	} else {
 	  m_data = null;
 	}
+	m_data_raw = null;
 	
 	// Convert weight vector
 	double[] sparseWeights = new double[m_weights.length];
@@ -646,10 +658,19 @@ public class SMO
 	
 	// Is weight vector stored in sparse format?
 	if (m_sparseWeights == null) {
-	  int n1 = inst.numValues(); 
-	  for (int p = 0; p < n1; p++) {
-	    if (inst.index(p) != m_classIndex) {
-	      result += m_weights[inst.index(p)] * inst.valueSparse(p);
+	  if(m_data_raw != null && index >= 0) {
+	    double[] inst_raw = m_data_raw[index];
+	    for(int p=0; p<inst_raw.length; p++) {
+	      if(p != m_classIndex) {
+		result += m_weights[p] * inst_raw[p];
+	      }
+	    }
+	  } else {
+	    int n1 = inst.numValues();
+	    for (int p = 0; p < n1; p++) {
+	      if (inst.index(p) != m_classIndex) {
+		result += m_weights[inst.index(p)] * inst.valueSparse(p);
+	      }
 	    }
 	  }
 	} else {
@@ -1007,18 +1028,33 @@ public class SMO
       
       // Update weight vector to reflect change a1 and a2, if linear SVM
       if (m_KernelIsLinear) {
-	Instance inst1 = m_data.instance(i1);
-	for (int p1 = 0; p1 < inst1.numValues(); p1++) {
-	  if (inst1.index(p1) != m_data.classIndex()) {
-	    m_weights[inst1.index(p1)] += 
-	      y1 * (a1 - alph1) * inst1.valueSparse(p1);
+	if(m_data_raw != null) {
+	  double[] inst1 = m_data_raw[i1];
+	  for(int p1=0; p1<inst1.length; p1++) {
+	    if(p1 != m_classIndex) {
+	      m_weights[p1] += y1 * (a1 - alph1) * inst1[p1];
+	    }
 	  }
-	}
-	Instance inst2 = m_data.instance(i2);
-	for (int p2 = 0; p2 < inst2.numValues(); p2++) {
-	  if (inst2.index(p2) != m_data.classIndex()) {
-	    m_weights[inst2.index(p2)] += 
-	      y2 * (a2 - alph2) * inst2.valueSparse(p2);
+	  double[] inst2 = m_data_raw[i2];
+	  for(int p2=0; p2<inst2.length; p2++) {
+	    if(p2 != m_classIndex) {
+	      m_weights[p2] += y2 * (a2 - alph2) * inst2[p2];
+	    }
+	  }
+	} else {
+	  Instance inst1 = m_data.instance(i1);
+	  for (int p1 = 0; p1 < inst1.numValues(); p1++) {
+	    if (inst1.index(p1) != m_data.classIndex()) {
+	      m_weights[inst1.index(p1)] += y1 * (a1 - alph1)
+		  * inst1.valueSparse(p1);
+	    }
+	  }
+	  Instance inst2 = m_data.instance(i2);
+	  for (int p2 = 0; p2 < inst2.numValues(); p2++) {
+	    if (inst2.index(p2) != m_data.classIndex()) {
+	      m_weights[inst2.index(p2)] += y2 * (a2 - alph2)
+		  * inst2.valueSparse(p2);
+	    }
 	  }
 	}
       }
