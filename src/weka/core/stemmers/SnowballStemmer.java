@@ -30,7 +30,6 @@ import weka.core.Option;
 import weka.core.OptionHandler;
 import weka.core.RevisionUtils;
 import weka.core.Utils;
-import weka.gui.GenericObjectEditor;
 
 /**
  <!-- globalinfo-start -->
@@ -253,7 +252,7 @@ public class SnowballStemmer
     if (!m_Present)
       return;
 
-    classnames = GenericObjectEditor.getClassnames(SNOWBALL_PROGRAM);
+    classnames = new Vector();//GenericObjectEditor.getClassnames(SNOWBALL_PROGRAM);
     // try dynamic discovery if not in props file
     if (classnames.size() == 0) {
       classnames = ClassDiscovery.find(SNOWBALL_PROGRAM, PACKAGE_EXT);

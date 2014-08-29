@@ -36,7 +36,6 @@ import weka.core.DenseInstance;
 import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
-import weka.core.MathematicalExpression;
 import weka.core.Option;
 import weka.core.OptionHandler;
 import weka.core.RevisionUtils;
@@ -719,7 +718,7 @@ public class KernelFilter
     symbols = new HashMap();
     symbols.put("A", new Double(instances.numAttributes()));
     symbols.put("N", new Double(instances.numInstances()));
-    m_KernelFactor = MathematicalExpression.evaluate(getKernelFactorExpression(), symbols);
+//    m_KernelFactor = MathematicalExpression.evaluate(getKernelFactorExpression(), symbols);
     
     // init filters
     if (!m_checksTurnedOff) {

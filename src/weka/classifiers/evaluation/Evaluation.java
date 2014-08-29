@@ -21,9 +21,6 @@
 
 package weka.classifiers.evaluation;
 
-import java.beans.BeanInfo;
-import java.beans.Introspector;
-import java.beans.MethodDescriptor;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -36,7 +33,6 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Serializable;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -56,7 +52,6 @@ import weka.classifiers.UpdateableClassifier;
 import weka.classifiers.evaluation.output.prediction.AbstractOutput;
 import weka.classifiers.evaluation.output.prediction.PlainText;
 import weka.classifiers.pmml.consumer.PMMLClassifier;
-import weka.classifiers.xml.XMLClassifier;
 import weka.core.BatchPredictor;
 import weka.core.Drawable;
 import weka.core.FastVector;
@@ -75,7 +70,6 @@ import weka.core.pmml.PMMLFactory;
 import weka.core.pmml.PMMLModel;
 import weka.core.xml.KOML;
 import weka.core.xml.XMLOptions;
-import weka.core.xml.XMLSerialization;
 import weka.estimators.UnivariateKernelEstimator;
 
 /**
@@ -1153,18 +1147,18 @@ public class Evaluation implements Summarizable, RevisionHandler, Serializable {
           success = false;
         }
         if (!success) {
-          // load options from serialized data ('-l' is automatically erased!)
-          XMLClassifier xmlserial = new XMLClassifier();
-          OptionHandler cl = (OptionHandler) xmlserial.read(Utils.getOption(
-              'l', options));
-
-          // merge options
-          optionsTmp = new String[options.length + cl.getOptions().length];
-          System.arraycopy(cl.getOptions(), 0, optionsTmp, 0,
-              cl.getOptions().length);
-          System.arraycopy(options, 0, optionsTmp, cl.getOptions().length,
-              options.length);
-          options = optionsTmp;
+//          // load options from serialized data ('-l' is automatically erased!)
+//          XMLClassifier xmlserial = new XMLClassifier();
+//          OptionHandler cl = (OptionHandler) xmlserial.read(Utils.getOption(
+//              'l', options));
+//
+//          // merge options
+//          optionsTmp = new String[options.length + cl.getOptions().length];
+//          System.arraycopy(cl.getOptions(), 0, optionsTmp, 0,
+//              cl.getOptions().length);
+//          System.arraycopy(options, 0, optionsTmp, cl.getOptions().length,
+//              options.length);
+//          options = optionsTmp;
         }
       }
 
@@ -1518,8 +1512,8 @@ public class Evaluation implements Summarizable, RevisionHandler, Serializable {
       else {
         BufferedOutputStream xmlOutputStream = new BufferedOutputStream(os);
         if (objectOutputFileName.endsWith(".xml")) {
-          XMLSerialization xmlSerial = new XMLClassifier();
-          xmlSerial.write(xmlOutputStream, classifier);
+//          XMLSerialization xmlSerial = new XMLClassifier();
+//          xmlSerial.write(xmlOutputStream, classifier);
         } else
         // whether KOML is present has already been checked
         // if not present -> ".koml" is interpreted as binary - see above
@@ -4087,22 +4081,22 @@ public class Evaluation implements Summarizable, RevisionHandler, Serializable {
    * @throws Exception if there is a problem reflecting on the classifier
    */
   protected static String getGlobalInfo(Classifier classifier) throws Exception {
-    BeanInfo bi = Introspector.getBeanInfo(classifier.getClass());
-    MethodDescriptor[] methods;
-    methods = bi.getMethodDescriptors();
-    Object[] args = {};
+//    BeanInfo bi = Introspector.getBeanInfo(classifier.getClass());
+//    MethodDescriptor[] methods;
+//    methods = bi.getMethodDescriptors();
+//    Object[] args = {};
     String result = "\nSynopsis for " + classifier.getClass().getName()
         + ":\n\n";
 
-    for (int i = 0; i < methods.length; i++) {
-      String name = methods[i].getDisplayName();
-      Method meth = methods[i].getMethod();
-      if (name.equals("globalInfo")) {
-        String globalInfo = (String) (meth.invoke(classifier, args));
-        result += globalInfo;
-        break;
-      }
-    }
+//    for (int i = 0; i < methods.length; i++) {
+//      String name = methods[i].getDisplayName();
+//      Method meth = methods[i].getMethod();
+//      if (name.equals("globalInfo")) {
+//        String globalInfo = (String) (meth.invoke(classifier, args));
+//        result += globalInfo;
+//        break;
+//      }
+//    }
 
     return result;
   }

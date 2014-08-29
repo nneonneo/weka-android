@@ -139,24 +139,24 @@ public final class Utils
 
     // Allow a properties file in the WekaPackageManager.PROPERTIES_DIR to override
     Properties userProps = new Properties(defaultProps);
-    if (!WekaPackageManager.PROPERTIES_DIR.exists()) {
-      WekaPackageManager.PROPERTIES_DIR.mkdir();
-    }
-    File propFile = new File(WekaPackageManager.PROPERTIES_DIR.toString()
-                             + File.separator
-                             + resourceName);
-
-    if (propFile.exists()) {
-      try {
-        userProps.load(new FileInputStream(propFile));
-      } catch (Exception ex) {
-        throw new Exception("Problem reading user properties: " + propFile);
-      }
-    }
+//    if (!WekaPackageManager.PROPERTIES_DIR.exists()) {
+//      WekaPackageManager.PROPERTIES_DIR.mkdir();
+//    }
+//    File propFile = new File(WekaPackageManager.PROPERTIES_DIR.toString()
+//                             + File.separator
+//                             + resourceName);
+//
+//    if (propFile.exists()) {
+//      try {
+//        userProps.load(new FileInputStream(propFile));
+//      } catch (Exception ex) {
+//        throw new Exception("Problem reading user properties: " + propFile);
+//      }
+//    }
 
     // Allow a properties file in the current directory to override
     Properties localProps = new Properties(userProps);
-    propFile = new File(resourceName);
+    File propFile = new File(resourceName);
     if (propFile.exists()) {
       try {
         localProps.load(new FileInputStream(propFile));
@@ -2063,20 +2063,21 @@ public final class Utils
    * in the future.
    */
   public static boolean getDontShowDialog(String dialogName) {
-    File wekaHome = WekaPackageManager.WEKA_HOME;
-    
-    if (!wekaHome.exists()) {
-      return false;
-    }
-    
-    File dialogSubDir = new File(wekaHome.toString() + File.separator + "systemDialogs");
-    if (!dialogSubDir.exists()) {
-      return false;
-    }
-    
-    File dialogFile = new File(dialogSubDir.toString() + File.separator + dialogName);
-    
-    return dialogFile.exists();
+//    File wekaHome = WekaPackageManager.WEKA_HOME;
+//    
+//    if (!wekaHome.exists()) {
+//      return false;
+//    }
+//    
+//    File dialogSubDir = new File(wekaHome.toString() + File.separator + "systemDialogs");
+//    if (!dialogSubDir.exists()) {
+//      return false;
+//    }
+//    
+//    File dialogFile = new File(dialogSubDir.toString() + File.separator + dialogName);
+//    
+//    return dialogFile.exists();
+	  return true;
   }
   
   /**
@@ -2089,21 +2090,21 @@ public final class Utils
    * in $WEKA_HOME/systemDialogs
    */
   public static void setDontShowDialog(String dialogName) throws Exception {
-    File wekaHome = WekaPackageManager.WEKA_HOME;
-    
-    if (!wekaHome.exists()) {
-      return;
-    }
-    
-    File dialogSubDir = new File(wekaHome.toString() + File.separator + "systemDialogs");
-    if (!dialogSubDir.exists()) {
-      if (!dialogSubDir.mkdir()) {
-        return;
-      }
-    }
-    
-    File dialogFile = new File(dialogSubDir.toString() + File.separator + dialogName);
-    dialogFile.createNewFile();
+//    File wekaHome = WekaPackageManager.WEKA_HOME;
+//    
+//    if (!wekaHome.exists()) {
+//      return;
+//    }
+//    
+//    File dialogSubDir = new File(wekaHome.toString() + File.separator + "systemDialogs");
+//    if (!dialogSubDir.exists()) {
+//      if (!dialogSubDir.mkdir()) {
+//        return;
+//      }
+//    }
+//    
+//    File dialogFile = new File(dialogSubDir.toString() + File.separator + dialogName);
+//    dialogFile.createNewFile();
   }
   
   /**
@@ -2120,20 +2121,21 @@ public final class Utils
    * again in the future.
    */
   public static String getDontShowDialogResponse(String dialogName) throws Exception {
-    if (!getDontShowDialog(dialogName)) {
-      return null; // This must be the first time - no file recorded yet.
-    }
-    
-    File wekaHome = WekaPackageManager.WEKA_HOME;
-    File dialogSubDir = new File(wekaHome.toString() + File.separator 
-        + "systemDialogs" + File.separator + dialogName);
-
-    
-    BufferedReader br = new BufferedReader(new FileReader(dialogSubDir));
-    String response = br.readLine();
-    
-    br.close();
-    return response;
+//    if (!getDontShowDialog(dialogName)) {
+//      return null; // This must be the first time - no file recorded yet.
+//    }
+//    
+//    File wekaHome = WekaPackageManager.WEKA_HOME;
+//    File dialogSubDir = new File(wekaHome.toString() + File.separator 
+//        + "systemDialogs" + File.separator + dialogName);
+//
+//    
+//    BufferedReader br = new BufferedReader(new FileReader(dialogSubDir));
+//    String response = br.readLine();
+//    
+//    br.close();
+//    return response;
+	  return null;
   }
   
   /**
@@ -2146,25 +2148,25 @@ public final class Utils
    */
   public static void setDontShowDialogResponse(String dialogName, String response) 
     throws Exception {
-    
-    File wekaHome = WekaPackageManager.WEKA_HOME;
-    
-    if (!wekaHome.exists()) {
-      return;
-    }
-    
-    File dialogSubDir = new File(wekaHome.toString() + File.separator + "systemDialogs");
-    if (!dialogSubDir.exists()) {
-      if (!dialogSubDir.mkdir()) {
-        return;
-      }
-    }
-    
-    File dialogFile = new File(dialogSubDir.toString() + File.separator + dialogName);
-    BufferedWriter br = new BufferedWriter(new FileWriter(dialogFile));
-    br.write(response + "\n");
-    br.flush();
-    br.close();
+//    
+//    File wekaHome = WekaPackageManager.WEKA_HOME;
+//    
+//    if (!wekaHome.exists()) {
+//      return;
+//    }
+//    
+//    File dialogSubDir = new File(wekaHome.toString() + File.separator + "systemDialogs");
+//    if (!dialogSubDir.exists()) {
+//      if (!dialogSubDir.mkdir()) {
+//        return;
+//      }
+//    }
+//    
+//    File dialogFile = new File(dialogSubDir.toString() + File.separator + dialogName);
+//    BufferedWriter br = new BufferedWriter(new FileWriter(dialogFile));
+//    br.write(response + "\n");
+//    br.flush();
+//    br.close();
   }
 
   /**

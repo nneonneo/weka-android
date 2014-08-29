@@ -26,8 +26,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamClass;
 import java.io.Serializable;
-import java.lang.management.ManagementFactory;
-import java.lang.management.ThreadMXBean;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -539,11 +537,12 @@ public class RegressionSplitEvaluator
     if (m_Template == null) {
       throw new Exception("No classifier has been specified");
     }
-    ThreadMXBean thMonitor = ManagementFactory.getThreadMXBean();
-    boolean canMeasureCPUTime = thMonitor.isThreadCpuTimeSupported();
-    if(canMeasureCPUTime && !thMonitor.isThreadCpuTimeEnabled())
-      thMonitor.setThreadCpuTimeEnabled(true);
-    
+//    ThreadMXBean thMonitor = ManagementFactory.getThreadMXBean();
+//    boolean canMeasureCPUTime = thMonitor.isThreadCpuTimeSupported();
+//    if(canMeasureCPUTime && !thMonitor.isThreadCpuTimeEnabled())
+//      thMonitor.setThreadCpuTimeEnabled(true);
+    boolean canMeasureCPUTime = false;
+
     int addm = (m_AdditionalMeasures != null) ? m_AdditionalMeasures.length : 0;
     Object [] result = new Object[RESULT_SIZE + addm + m_numPluginStatistics];
     long thID = Thread.currentThread().getId();
@@ -553,20 +552,20 @@ public class RegressionSplitEvaluator
     m_Classifier = AbstractClassifier.makeCopy(m_Template);
 
     trainTimeStart = System.currentTimeMillis();
-    if(canMeasureCPUTime)
-      CPUStartTime = thMonitor.getThreadUserTime(thID);
+//    if(canMeasureCPUTime)
+//      CPUStartTime = thMonitor.getThreadUserTime(thID);
     m_Classifier.buildClassifier(train);
-    if(canMeasureCPUTime)
-      trainCPUTimeElapsed = thMonitor.getThreadUserTime(thID) - CPUStartTime;
+//    if(canMeasureCPUTime)
+//      trainCPUTimeElapsed = thMonitor.getThreadUserTime(thID) - CPUStartTime;
     trainTimeElapsed = System.currentTimeMillis() - trainTimeStart;
     testTimeStart = System.currentTimeMillis();
-    if(canMeasureCPUTime)
-      CPUStartTime = thMonitor.getThreadUserTime(thID);
+//    if(canMeasureCPUTime)
+//      CPUStartTime = thMonitor.getThreadUserTime(thID);
     eval.evaluateModel(m_Classifier, test);
-    if(canMeasureCPUTime)
-      testCPUTimeElapsed = thMonitor.getThreadUserTime(thID) - CPUStartTime;
+//    if(canMeasureCPUTime)
+//      testCPUTimeElapsed = thMonitor.getThreadUserTime(thID) - CPUStartTime;
     testTimeElapsed = System.currentTimeMillis() - testTimeStart;
-    thMonitor = null;
+//    thMonitor = null;
     
     m_result = eval.toSummaryString();
     // The results stored are all per instance -- can be multiplied by the
