@@ -1069,22 +1069,22 @@ public final class Utils implements RevisionHandler {
   public static Object forName(Class<?> classType, String className,
     String[] options) throws Exception {
 
-    List<String> matches = Run.findSchemeMatch(classType, className, false,
-      true);
-    if (matches.size() == 0) {
-      throw new Exception("Can't find class called: " + className);
-    }
-
-    if (matches.size() > 1) {
-      StringBuffer sb = new StringBuffer("More than one possibility matched '"
-        + className + "':\n");
-      for (String s : matches) {
-        sb.append("  " + s + '\n');
-      }
-      throw new Exception(sb.toString());
-    }
-
-    className = matches.get(0);
+//    List<String> matches = Run.findSchemeMatch(classType, className, false,
+//      true);
+//    if (matches.size() == 0) {
+//      throw new Exception("Can't find class called: " + className);
+//    }
+//
+//    if (matches.size() > 1) {
+//      StringBuffer sb = new StringBuffer("More than one possibility matched '"
+//        + className + "':\n");
+//      for (String s : matches) {
+//        sb.append("  " + s + '\n');
+//      }
+//      throw new Exception(sb.toString());
+//    }
+//
+//    className = matches.get(0);
 
     Class<?> c = null;
     try {
