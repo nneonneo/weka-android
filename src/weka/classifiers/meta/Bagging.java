@@ -22,6 +22,7 @@
 package weka.classifiers.meta;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Random;
@@ -81,9 +82,16 @@ import weka.core.PartitionGenerator;
  * <pre> -O
  *  Calculate the out of bag error.</pre>
  * 
+ * <pre> -represent-copies-using-weights
+ *  Represent copies of instances using weights rather than explicitly.</pre>
+ * 
  * <pre> -S &lt;num&gt;
  *  Random number seed.
  *  (default 1)</pre>
+ * 
+ * <pre> -num-slots &lt;num&gt;
+ *  Number of execution slots.
+ *  (default 1 - i.e. no parallelism)</pre>
  * 
  * <pre> -I &lt;num&gt;
  *  Number of iterations.
@@ -120,6 +128,12 @@ import weka.core.PartitionGenerator;
  * <pre> -L
  *  Maximum tree depth (default -1, no maximum)</pre>
  * 
+ * <pre> -I
+ *  Initial class value count (default 0)</pre>
+ * 
+ * <pre> -R
+ *  Spread initial count over all class values (i.e. don't use 1 per value)</pre>
+ * 
  <!-- options-end -->
  *
  * Options after -- are passed to the designated classifier.<p>
@@ -127,7 +141,7 @@ import weka.core.PartitionGenerator;
  * @author Eibe Frank (eibe@cs.waikato.ac.nz)
  * @author Len Trigg (len@reeltwo.com)
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
- * @version $Revision: 9785 $
+ * @version $Revision: 10470 $
  */
 public class Bagging
   extends RandomizableParallelIteratedSingleClassifierEnhancer 
@@ -142,6 +156,9 @@ public class Bagging
 
   /** Whether to calculate the out of bag error */
   protected boolean m_CalcOutOfBag = false;
+
+  /** Whether to represent copies of instances using weights rather than explicitly */
+  protected boolean m_RepresentUsingWeights = false;
 
   /** The out of bag error that has been calculated */
   protected double m_OutOfBagError;  
@@ -174,6 +191,7 @@ public class Bagging
    * 
    * @return the technical information about this class
    */
+  @Override
   public TechnicalInformation getTechnicalInformation() {
     TechnicalInformation 	result;
     
@@ -194,6 +212,7 @@ public class Bagging
    * 
    * @return the default classifier classname
    */
+  @Override
   protected String defaultClassifierString() {
     
     return "weka.classifiers.trees.REPTree";
@@ -204,9 +223,10 @@ public class Bagging
    *
    * @return an enumeration of all the available options.
    */
-  public Enumeration listOptions() {
+  @Override
+  public Enumeration<Option> listOptions() {
 
-    Vector newVector = new Vector(2);
+    Vector<Option> newVector = new Vector<Option>(3);
 
     newVector.addElement(new Option(
               "\tSize of each bag, as a percentage of the\n" 
@@ -215,11 +235,12 @@ public class Bagging
     newVector.addElement(new Option(
               "\tCalculate the out of bag error.",
               "O", 0, "-O"));
+    newVector.addElement(new Option(
+              "\tRepresent copies of instances using weights rather than explicitly.",
+              "-represent-copies-using-weights", 0, "-represent-copies-using-weights"));
 
-    Enumeration enu = super.listOptions();
-    while (enu.hasMoreElements()) {
-      newVector.addElement(enu.nextElement());
-    }
+    newVector.addAll(Collections.list(super.listOptions()));
+ 
     return newVector.elements();
   }
 
@@ -237,9 +258,16 @@ public class Bagging
    * <pre> -O
    *  Calculate the out of bag error.</pre>
    * 
+   * <pre> -represent-copies-using-weights
+   *  Represent copies of instances using weights rather than explicitly.</pre>
+   * 
    * <pre> -S &lt;num&gt;
    *  Random number seed.
    *  (default 1)</pre>
+   * 
+   * <pre> -num-slots &lt;num&gt;
+   *  Number of execution slots.
+   *  (default 1 - i.e. no parallelism)</pre>
    * 
    * <pre> -I &lt;num&gt;
    *  Number of iterations.
@@ -276,6 +304,12 @@ public class Bagging
    * <pre> -L
    *  Maximum tree depth (default -1, no maximum)</pre>
    * 
+   * <pre> -I
+   *  Initial class value count (default 0)</pre>
+   * 
+   * <pre> -R
+   *  Spread initial count over all class values (i.e. don't use 1 per value)</pre>
+   * 
    <!-- options-end -->
    *
    * Options after -- are passed to the designated classifier.<p>
@@ -283,6 +317,7 @@ public class Bagging
    * @param options the list of options as an array of strings
    * @throws Exception if an option is not supported
    */
+  @Override
   public void setOptions(String[] options) throws Exception {
 
     String bagSize = Utils.getOption('P', options);
@@ -294,7 +329,11 @@ public class Bagging
 
     setCalcOutOfBag(Utils.getFlag('O', options));
 
+    setRepresentCopiesUsingWeights(Utils.getFlag("represent-copies-using-weights", options));
+
     super.setOptions(options);
+    
+    Utils.checkForRemainingOptions(options);
   }
 
   /**
@@ -302,28 +341,25 @@ public class Bagging
    *
    * @return an array of strings suitable for passing to setOptions
    */
+  @Override
   public String [] getOptions() {
 
-
-    String [] superOptions = super.getOptions();
-    String [] options = new String [superOptions.length + 3];
-
-    int current = 0;
-    options[current++] = "-P"; 
-    options[current++] = "" + getBagSizePercent();
+    Vector<String> options = new Vector<String>();
+    
+    options.add("-P"); 
+    options.add("" + getBagSizePercent());
 
     if (getCalcOutOfBag()) { 
-      options[current++] = "-O";
+        options.add("-O");
     }
 
-    System.arraycopy(superOptions, 0, options, current, 
-		     superOptions.length);
-
-    current += superOptions.length;
-    while (current < options.length) {
-      options[current++] = "";
+    if (getRepresentCopiesUsingWeights()) {
+        options.add("-represent-copies-using-weights");
     }
-    return options;
+
+    Collections.addAll(options, super.getOptions());
+    
+    return options.toArray(new String[0]);
   }
 
   /**
@@ -353,6 +389,35 @@ public class Bagging
   public void setBagSizePercent(int newBagSizePercent) {
 
     m_BagSizePercent = newBagSizePercent;
+  }
+
+  /**
+   * Returns the tip text for this property
+   * @return tip text for this property suitable for
+   * displaying in the explorer/experimenter gui
+   */
+  public String representCopiesUsingWeightsTipText() {
+    return "Whether to represent copies of instances using weights rather than explicitly.";
+  }
+
+  /**
+   * Set whether copies of instances are represented using weights rather than explicitly.
+   *
+   * @param representUsingWeights whether to represent copies using weights
+   */
+  public void setRepresentCopiesUsingWeights(boolean representUsingWeights) {
+
+    m_RepresentUsingWeights = representUsingWeights;
+  }
+
+  /**
+   * Get whether copies of instances are represented using weights rather than explicitly.
+   *
+   * @return whether the out of bag error is calculated
+   */
+  public boolean getRepresentCopiesUsingWeights() {
+
+    return m_RepresentUsingWeights;
   }
 
   /**
@@ -400,9 +465,10 @@ public class Bagging
    *
    * @return an enumeration of the measure names
    */
-  public Enumeration enumerateMeasures() {
+  @Override
+  public Enumeration<String> enumerateMeasures() {
     
-    Vector newVector = new Vector(1);
+    Vector<String> newVector = new Vector<String>(1);
     newVector.addElement("measureOutOfBagError");
     return newVector.elements();
   }
@@ -414,6 +480,7 @@ public class Bagging
    * @return the value of the named measure
    * @throws IllegalArgumentException if the named measure is not supported
    */
+  @Override
   public double getMeasure(String additionalMeasureName) {
     
     if (additionalMeasureName.equalsIgnoreCase("measureOutOfBagError")) {
@@ -435,6 +502,7 @@ public class Bagging
    * @return the training set for the supplied iteration number
    * @throws Exception if something goes wrong when generating a training set.
    */
+  @Override
   protected synchronized Instances getTrainingSet(int iteration) throws Exception {
     int bagSize = m_data.numInstances() * m_BagSizePercent / 100;
     Instances bagData = null;
@@ -443,9 +511,9 @@ public class Bagging
     // create the in-bag dataset
     if (m_CalcOutOfBag) {
       m_inBag[iteration] = new boolean[m_data.numInstances()];
-      bagData = m_data.resampleWithWeights(r, m_inBag[iteration]);
+      bagData = m_data.resampleWithWeights(r, m_inBag[iteration], getRepresentCopiesUsingWeights());
     } else {
-      bagData = m_data.resampleWithWeights(r);
+      bagData = m_data.resampleWithWeights(r, getRepresentCopiesUsingWeights());
       if (bagSize < m_data.numInstances()) {
         bagData.randomize(r);
         Instances newBagData = new Instances(bagData, 0, bagSize);
@@ -463,10 +531,18 @@ public class Bagging
    * bagged classifier.
    * @throws Exception if the classifier could not be built successfully
    */
+  @Override
   public void buildClassifier(Instances data) throws Exception {
 
     // can classifier handle the data?
     getCapabilities().testWithFail(data);
+
+    // Has user asked to represent copies using weights?
+    if (getRepresentCopiesUsingWeights() && !(m_Classifier instanceof WeightedInstancesHandler)) {
+      throw new IllegalArgumentException("Cannot represent copies using weights when " +
+                                         "base learner in bagging does not implement " +
+                                         "WeightedInstancesHandler.");
+    }
 
     // remove instances with missing class
     m_data = new Instances(data);
@@ -479,7 +555,6 @@ public class Bagging
 					 "out-of-bag error is to be calculated!");
     }
 
-    int bagSize = m_data.numInstances() * m_BagSizePercent / 100;
     m_random = new Random(m_Seed);
     
     m_inBag = null;
@@ -514,13 +589,14 @@ public class Bagging
           if (m_inBag[j][i])
             continue;
           
-          voteCount++;
-//          double pred = m_Classifiers[j].classifyInstance(m_data.instance(i));
           if (numeric) {
-            // votes[0] += pred;
-            votes[0] += m_Classifiers[j].classifyInstance(m_data.instance(i));
+            double pred = m_Classifiers[j].classifyInstance(m_data.instance(i));
+            if (!Utils.isMissingValue(pred)) {
+              votes[0] += pred;
+              voteCount++;
+            }
           } else {
-            //  votes[(int) pred]++;
+            voteCount++;
             double[] newProbs = m_Classifiers[j].distributionForInstance(m_data.instance(i));
             // average the probability estimates
             for (int k = 0; k < newProbs.length; k++) {
@@ -531,31 +607,37 @@ public class Bagging
         
         // "vote"
         if (numeric) {
-          vote = votes[0];
-          if (voteCount > 0) {
-            vote  /= voteCount;    // average
+          if (voteCount == 0) {
+            vote = Utils.missingValue();
+          } else {
+            vote = votes[0] / voteCount;    // average
           }
         } else {
           if (Utils.eq(Utils.sum(votes), 0)) {            
+            vote = Utils.missingValue();
           } else {
+            vote = Utils.maxIndex(votes);   // predicted class
             Utils.normalize(votes);
           }
-          vote = Utils.maxIndex(votes);   // predicted class
         }
         
         // error for instance
-        outOfBagCount += m_data.instance(i).weight();
-        if (numeric) {
-          errorSum += StrictMath.abs(vote - m_data.instance(i).classValue()) 
-          * m_data.instance(i).weight();
-        }
-        else {
-          if (vote != m_data.instance(i).classValue())
-            errorSum += m_data.instance(i).weight();
+        if (!Utils.isMissingValue(vote)) {
+          outOfBagCount += m_data.instance(i).weight();
+          if (numeric) {
+            errorSum += StrictMath.abs(vote - m_data.instance(i).classValue()) 
+              * m_data.instance(i).weight();
+          }
+          else {
+            if (vote != m_data.instance(i).classValue())
+              errorSum += m_data.instance(i).weight();
+          }
         }
       }
       
-      m_OutOfBagError = errorSum / outOfBagCount;
+      if (outOfBagCount > 0) {
+        m_OutOfBagError = errorSum / outOfBagCount;
+      }
     }
     else {
       m_OutOfBagError = 0;
@@ -573,13 +655,19 @@ public class Bagging
    * @return preedicted class probability distribution
    * @throws Exception if distribution can't be computed successfully 
    */
+  @Override
   public double[] distributionForInstance(Instance instance) throws Exception {
 
     double [] sums = new double [instance.numClasses()], newProbs; 
     
+    double numPreds = 0;
     for (int i = 0; i < m_NumIterations; i++) {
       if (instance.classAttribute().isNumeric() == true) {
-	sums[0] += m_Classifiers[i].classifyInstance(instance);
+        double pred = m_Classifiers[i].classifyInstance(instance);
+        if (!Utils.isMissingValue(pred)) {
+          sums[0] += pred;
+          numPreds++;
+        }
       } else {
 	newProbs = m_Classifiers[i].distributionForInstance(instance);
 	for (int j = 0; j < newProbs.length; j++)
@@ -587,7 +675,11 @@ public class Bagging
       }
     }
     if (instance.classAttribute().isNumeric() == true) {
-      sums[0] /= (double)m_NumIterations;
+      if (numPreds == 0) {
+        sums[0] = Utils.missingValue();
+      } else {
+        sums[0] /= numPreds;
+      }
       return sums;
     } else if (Utils.eq(Utils.sum(sums), 0)) {
       return sums;
@@ -602,6 +694,7 @@ public class Bagging
    *
    * @return description of the bagged classifier as a string
    */
+  @Override
   public String toString() {
     
     if (m_Classifiers == null) {
@@ -624,6 +717,7 @@ public class Bagging
   /**
    * Builds the classifier to generate a partition.
    */
+  @Override
   public void generatePartition(Instances data) throws Exception {
     
     if (m_Classifier instanceof PartitionGenerator)
@@ -635,6 +729,7 @@ public class Bagging
   /**
    * Computes an array that indicates leaf membership
    */
+  @Override
   public double[] getMembershipValues(Instance inst) throws Exception {
     
     if (m_Classifier instanceof PartitionGenerator) {
@@ -660,6 +755,7 @@ public class Bagging
   /**
    * Returns the number of elements in the partition.
    */
+  @Override
   public int numElements() throws Exception {
     
     if (m_Classifier instanceof PartitionGenerator) {
@@ -677,8 +773,9 @@ public class Bagging
    * 
    * @return		the revision
    */
+  @Override
   public String getRevision() {
-    return RevisionUtils.extract("$Revision: 9785 $");
+    return RevisionUtils.extract("$Revision: 10470 $");
   }
 
   /**
@@ -724,7 +821,9 @@ public class Bagging
   @Override
   public void finalizeAggregation() throws Exception {    
     m_Classifiers = m_classifiersCache.toArray(new Classifier[1]);
+    m_NumIterations = m_Classifiers.length;
     
     m_classifiersCache = null;
   }
 }
+

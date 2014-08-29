@@ -21,19 +21,27 @@
 
 package weka.classifiers.trees.ht;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import weka.core.Instance;
+
+import java.io.Serializable;
 
 /**
  * Base class for different split types
  * 
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @author Mark Hall (mhall{[at]}pentaho{[dot]}com)
- * @version $Revision: 9705 $
+ * @version $Revision: 10531 $
  */
-public abstract class Split {
+public abstract class Split implements Serializable {
+
+  /**
+   * For serialization
+   */
+  private static final long serialVersionUID = 5390368487675958092L;
 
   /** name(s) of attribute(s) involved in the split */
   protected List<String> m_splitAttNames = new ArrayList<String>();

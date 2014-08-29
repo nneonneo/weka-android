@@ -21,6 +21,7 @@
 
 package weka.classifiers.meta;
 
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -100,7 +101,7 @@ import weka.filters.Filter;
  <!-- options-end -->
  *
  * @author Len Trigg (trigg@cs.waikato.ac.nz)
- * @version $Revision: 9117 $
+ * @version $Revision: 10141 $
  */
 public class FilteredClassifier 
   extends SingleClassifierEnhancer 
@@ -135,6 +136,14 @@ public class FilteredClassifier
   protected String defaultClassifierString() {
     
     return "weka.classifiers.trees.J48";
+  }
+
+  /**
+   * String describing default filter.
+   */
+  protected String defaultFilterString() {
+
+    return "weka.filters.supervised.attribute.Discretize";
   }
 
   /**
@@ -224,20 +233,25 @@ public class FilteredClassifier
    *
    * @return an enumeration of all the available options.
    */
-  public Enumeration listOptions() {
+  public Enumeration<Option> listOptions() {
 
-    Vector newVector = new Vector(2);
+    Vector<Option> newVector = new Vector<Option>(1);
     newVector.addElement(new Option(
 	      "\tFull class name of filter to use, followed\n"
 	      + "\tby filter options.\n"
 	      + "\teg: \"weka.filters.unsupervised.attribute.Remove -V -R 1,2\"",
 	      "F", 1, "-F <filter specification>"));
 
-    Enumeration enu = super.listOptions();
-    while (enu.hasMoreElements()) {
-      newVector.addElement(enu.nextElement());
+    newVector.addAll(Collections.list(super.listOptions()));
+    
+    if (getFilter() instanceof OptionHandler) {
+      newVector.addElement(new Option(
+        "",
+        "", 0, "\nOptions specific to filter "
+          + getFilter().getClass().getName() + ":"));
+      newVector.addAll(Collections.list(((OptionHandler)getFilter()).listOptions()));
     }
-
+    
     return newVector.elements();
   }
 
@@ -305,21 +319,21 @@ public class FilteredClassifier
    */
   public void setOptions(String[] options) throws Exception {
 
-    // Same for filter
     String filterString = Utils.getOption('F', options);
-    if (filterString.length() > 0) {
-      String [] filterSpec = Utils.splitOptions(filterString);
-      if (filterSpec.length == 0) {
-	throw new IllegalArgumentException("Invalid filter specification string");
-      }
-      String filterName = filterSpec[0];
-      filterSpec[0] = "";
-      setFilter((Filter) Utils.forName(Filter.class, filterName, filterSpec));
-    } else {
-      setFilter(new weka.filters.supervised.attribute.Discretize());
+    if (filterString.length() <= 0) {
+      filterString = defaultFilterString();
     }
+    String [] filterSpec = Utils.splitOptions(filterString);
+    if (filterSpec.length == 0) {
+      throw new IllegalArgumentException("Invalid filter specification string");
+    }
+    String filterName = filterSpec[0];
+    filterSpec[0] = "";
+    setFilter((Filter) Utils.forName(Filter.class, filterName, filterSpec));
 
     super.setOptions(options);
+    
+    Utils.checkForRemainingOptions(options);
   }
 
   /**
@@ -329,16 +343,14 @@ public class FilteredClassifier
    */
   public String [] getOptions() {
 
-    String [] superOptions = super.getOptions();
-    String [] options = new String [superOptions.length + 2];
-    int current = 0;
+    Vector<String> options = new Vector<String>();
 
-    options[current++] = "-F";
-    options[current++] = "" + getFilterSpec();
+    options.add("-F");
+    options.add("" + getFilterSpec());
 
-    System.arraycopy(superOptions, 0, options, current, 
-		     superOptions.length);
-    return options;
+    Collections.addAll(options, super.getOptions());
+    
+    return options.toArray(new String[0]);
   }
   
   /**
@@ -398,7 +410,7 @@ public class FilteredClassifier
       result = super.getCapabilities();
     else
       result = getFilter().getCapabilities();
-    
+
     // the filtered classifier always needs a class
     result.disable(Capability.NO_CLASS);
     
@@ -420,6 +432,8 @@ public class FilteredClassifier
     if (m_Classifier == null) {
       throw new Exception("No base classifiers have been set!");
     }
+
+    getCapabilities().testWithFail(data);
 
     // remove instances with missing class
     data = new Instances(data);
@@ -540,7 +554,7 @@ public class FilteredClassifier
    * @return		the revision
    */
   public String getRevision() {
-    return RevisionUtils.extract("$Revision: 9117 $");
+    return RevisionUtils.extract("$Revision: 10141 $");
   }
 
   /**

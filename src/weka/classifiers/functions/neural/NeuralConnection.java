@@ -20,6 +20,8 @@
 
 package weka.classifiers.functions.neural;
 
+import java.awt.Color;
+import java.awt.Graphics;
 import java.io.Serializable;
 
 import weka.core.RevisionHandler;
@@ -297,95 +299,95 @@ public abstract class NeuralConnection
   }
   
   
-//  /**
-//   * Call this function to determine if the point at x,y is on the unit.
-//   * @param g The graphics context for font size info.
-//   * @param x The x coord.
-//   * @param y The y coord.
-//   * @param w The width of the display.
-//   * @param h The height of the display.
-//   * @return True if the point is on the unit, false otherwise.
-//   */
-//  public boolean onUnit(Graphics g, int x, int y, int w, int h) {
-//
-//    int m = (int)(m_x * w);
-//    int c = (int)(m_y * h);
-//    if (x > m + 10 || x < m - 10 || y > c + 10 || y < c - 10) {
-//      return false;
-//    }
-//    return true;
-//
-//  }
-//  
-//  /**
-//   * Call this function to draw the node.
-//   * @param g The graphics context.
-//   * @param w The width of the drawing area.
-//   * @param h The height of the drawing area.
-//   */
-//  public void drawNode(Graphics g, int w, int h) {
-//    
-//    if ((m_type & OUTPUT) == OUTPUT) {
-//      g.setColor(Color.orange);
-//    }
-//    else {
-//      g.setColor(Color.red);
-//    }
-//    g.fillOval((int)(m_x * w) - 9, (int)(m_y * h) - 9, 19, 19);
-//    g.setColor(Color.gray);
-//    g.fillOval((int)(m_x * w) - 5, (int)(m_y * h) - 5, 11, 11);
-//  }
-//
-//  /**
-//   * Call this function to draw the node highlighted.
-//   * @param g The graphics context.
-//   * @param w The width of the drawing area.
-//   * @param h The height of the drawing area.
-//   */
-//  public void drawHighlight(Graphics g, int w, int h) {
-//   
-//    drawNode(g, w, h);
-//    g.setColor(Color.yellow);
-//    g.fillOval((int)(m_x * w) - 5, (int)(m_y * h) - 5, 11, 11);
-//  }
-//
-//  /** 
-//   * Call this function to draw the nodes input connections.
-//   * @param g The graphics context.
-//   * @param w The width of the drawing area.
-//   * @param h The height of the drawing area.
-//   */
-//  public void drawInputLines(Graphics g, int w, int h) {
-//
-//    g.setColor(Color.black);
-//    
-//    int px = (int)(m_x * w);
-//    int py = (int)(m_y * h);
-//    for (int noa = 0; noa < m_numInputs; noa++) {
-//      g.drawLine((int)(m_inputList[noa].getX() * w)
-//		 , (int)(m_inputList[noa].getY() * h)
-//		 , px, py);
-//    }
-//  }
-//
-//  /**
-//   * Call this function to draw the nodes output connections.
-//   * @param g The graphics context.
-//   * @param w The width of the drawing area.
-//   * @param h The height of the drawing area.
-//   */
-//  public void drawOutputLines(Graphics g, int w, int h) {
-//    
-//    g.setColor(Color.black);
-//    
-//    int px = (int)(m_x * w);
-//    int py = (int)(m_y * h);
-//    for (int noa = 0; noa < m_numOutputs; noa++) {
-//      g.drawLine(px, py
-//		 , (int)(m_outputList[noa].getX() * w)
-//		 , (int)(m_outputList[noa].getY() * h));
-//    }
-//  }
+  /**
+   * Call this function to determine if the point at x,y is on the unit.
+   * @param g The graphics context for font size info.
+   * @param x The x coord.
+   * @param y The y coord.
+   * @param w The width of the display.
+   * @param h The height of the display.
+   * @return True if the point is on the unit, false otherwise.
+   */
+  public boolean onUnit(Graphics g, int x, int y, int w, int h) {
+
+    int m = (int)(m_x * w);
+    int c = (int)(m_y * h);
+    if (x > m + 10 || x < m - 10 || y > c + 10 || y < c - 10) {
+      return false;
+    }
+    return true;
+
+  }
+  
+  /**
+   * Call this function to draw the node.
+   * @param g The graphics context.
+   * @param w The width of the drawing area.
+   * @param h The height of the drawing area.
+   */
+  public void drawNode(Graphics g, int w, int h) {
+    
+    if ((m_type & OUTPUT) == OUTPUT) {
+      g.setColor(Color.orange);
+    }
+    else {
+      g.setColor(Color.red);
+    }
+    g.fillOval((int)(m_x * w) - 9, (int)(m_y * h) - 9, 19, 19);
+    g.setColor(Color.gray);
+    g.fillOval((int)(m_x * w) - 5, (int)(m_y * h) - 5, 11, 11);
+  }
+
+  /**
+   * Call this function to draw the node highlighted.
+   * @param g The graphics context.
+   * @param w The width of the drawing area.
+   * @param h The height of the drawing area.
+   */
+  public void drawHighlight(Graphics g, int w, int h) {
+   
+    drawNode(g, w, h);
+    g.setColor(Color.yellow);
+    g.fillOval((int)(m_x * w) - 5, (int)(m_y * h) - 5, 11, 11);
+  }
+
+  /** 
+   * Call this function to draw the nodes input connections.
+   * @param g The graphics context.
+   * @param w The width of the drawing area.
+   * @param h The height of the drawing area.
+   */
+  public void drawInputLines(Graphics g, int w, int h) {
+
+    g.setColor(Color.black);
+    
+    int px = (int)(m_x * w);
+    int py = (int)(m_y * h);
+    for (int noa = 0; noa < m_numInputs; noa++) {
+      g.drawLine((int)(m_inputList[noa].getX() * w)
+		 , (int)(m_inputList[noa].getY() * h)
+		 , px, py);
+    }
+  }
+
+  /**
+   * Call this function to draw the nodes output connections.
+   * @param g The graphics context.
+   * @param w The width of the drawing area.
+   * @param h The height of the drawing area.
+   */
+  public void drawOutputLines(Graphics g, int w, int h) {
+    
+    g.setColor(Color.black);
+    
+    int px = (int)(m_x * w);
+    int py = (int)(m_y * h);
+    for (int noa = 0; noa < m_numOutputs; noa++) {
+      g.drawLine(px, py
+		 , (int)(m_outputList[noa].getX() * w)
+		 , (int)(m_outputList[noa].getY() * h));
+    }
+  }
 
 
   /**

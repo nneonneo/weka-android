@@ -20,9 +20,10 @@
 
 package weka.classifiers.evaluation;
 
+import java.util.ArrayList;
+
 import weka.classifiers.CostMatrix;
 import weka.core.Aggregateable;
-import weka.core.FastVector;
 import weka.core.Instances;
 
 /**
@@ -30,10 +31,10 @@ import weka.core.Instances;
  * stored in another Evaluation object.
  * 
  * @author Mark Hall (mhall{[at]}pentaho{[dot]}com)
- * @version $Revision: 9785 $
+ * @version $Revision: 10153 $
  */
 public class AggregateableEvaluation extends Evaluation implements
-    Aggregateable<Evaluation> {
+  Aggregateable<Evaluation> {
 
   /**
    * For serialization
@@ -57,8 +58,7 @@ public class AggregateableEvaluation extends Evaluation implements
    * @param costMatrix the cost matrix to use
    * @throws Exception if a problem occurs
    */
-  public AggregateableEvaluation(Instances data, CostMatrix costMatrix)
-      throws Exception {
+  public AggregateableEvaluation(Instances data, CostMatrix costMatrix) throws Exception {
     super(data, costMatrix);
   }
 
@@ -139,18 +139,20 @@ public class AggregateableEvaluation extends Evaluation implements
         m_MarginCounts[i] += newMarginCounts[i];
       }
     }
+    m_ComplexityStatisticsAvailable = evaluation.m_ComplexityStatisticsAvailable;
+    m_CoverageStatisticsAvailable = evaluation.m_CoverageStatisticsAvailable;
     m_SumPriorEntropy += evaluation.m_SumPriorEntropy;
     m_SumSchemeEntropy += evaluation.m_SumSchemeEntropy;
     m_TotalSizeOfRegions += evaluation.m_TotalSizeOfRegions;
     m_TotalCoverage += evaluation.m_TotalCoverage;
 
-    FastVector predsToAdd = evaluation.m_Predictions;
+    ArrayList<Prediction> predsToAdd = evaluation.m_Predictions;
     if (predsToAdd != null) {
       if (m_Predictions == null) {
-        m_Predictions = new FastVector();
+        m_Predictions = new ArrayList<Prediction>();
       }
       for (int i = 0; i < predsToAdd.size(); i++) {
-        m_Predictions.addElement(predsToAdd.elementAt(i));
+        m_Predictions.add(predsToAdd.get(i));
       }
     }
 

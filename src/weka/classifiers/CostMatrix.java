@@ -45,7 +45,7 @@ import weka.core.Utils;
  * 
  * @author Mark Hall
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
- * @version $Revision: 9047 $
+ * @version $Revision: 10141 $
  */
 public class CostMatrix implements Serializable, RevisionHandler {
 
@@ -161,8 +161,7 @@ public class CostMatrix implements Serializable, RevisionHandler {
 
     double sumOfWeightFactors = 0, sumOfMissClassWeights, sumOfWeights;
     double[] weightOfInstancesInClass, weightFactor, weightOfInstances;
-    Instances newData;
-
+    
     if (data.classIndex() < 0) {
       throw new Exception("Class index is not set!");
     }
@@ -552,7 +551,6 @@ public class CostMatrix implements Serializable, RevisionHandler {
           Double val = null;
           try {
             val = new Double(nextTok);
-            double value = val.doubleValue();
           } catch (Exception ex) {
             val = null;
           }
@@ -829,6 +827,6 @@ public class CostMatrix implements Serializable, RevisionHandler {
    */
   @Override
   public String getRevision() {
-    return RevisionUtils.extract("$Revision: 9047 $");
+    return RevisionUtils.extract("$Revision: 10141 $");
   }
 }

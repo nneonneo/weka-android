@@ -24,6 +24,9 @@ package weka.classifiers.evaluation;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
+import weka.gui.beans.PluginManager;
 
 /**
  * Abstract base class for pluggable classification/regression evaluation
@@ -45,23 +48,23 @@ public abstract class AbstractEvaluationMetric implements Serializable {
    */
   public static ArrayList<AbstractEvaluationMetric> getPluginMetrics() {
     ArrayList<AbstractEvaluationMetric> pluginMetricsList = null;
-//    Set<String> pluginMetrics = PluginManager
-//        .getPluginNamesOfType(AbstractEvaluationMetric.class.getName());
-//    if (pluginMetrics != null) {
-//      pluginMetricsList = new ArrayList<AbstractEvaluationMetric>();
-//
-//      for (String metric : pluginMetrics) {
-//        try {
-//          Object impl = PluginManager.getPluginInstance(
-//              AbstractEvaluationMetric.class.getName(), metric);
-//          if (impl instanceof AbstractEvaluationMetric) {
-//            pluginMetricsList.add((AbstractEvaluationMetric) impl);
-//          }
-//        } catch (Exception ex) {
-//          ex.printStackTrace();
-//        }
-//      }
-//    }
+    Set<String> pluginMetrics = PluginManager
+        .getPluginNamesOfType(AbstractEvaluationMetric.class.getName());
+    if (pluginMetrics != null) {
+      pluginMetricsList = new ArrayList<AbstractEvaluationMetric>();
+
+      for (String metric : pluginMetrics) {
+        try {
+          Object impl = PluginManager.getPluginInstance(
+              AbstractEvaluationMetric.class.getName(), metric);
+          if (impl instanceof AbstractEvaluationMetric) {
+            pluginMetricsList.add((AbstractEvaluationMetric) impl);
+          }
+        } catch (Exception ex) {
+          ex.printStackTrace();
+        }
+      }
+    }
     return pluginMetricsList;
   }
 

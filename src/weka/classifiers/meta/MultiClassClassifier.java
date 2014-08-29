@@ -22,6 +22,8 @@
 package weka.classifiers.meta;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Random;
 import java.util.Vector;
@@ -33,7 +35,6 @@ import weka.classifiers.rules.ZeroR;
 import weka.core.Attribute;
 import weka.core.Capabilities;
 import weka.core.Capabilities.Capability;
-import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.Option;
@@ -98,7 +99,7 @@ import weka.filters.unsupervised.instance.RemoveWithValues;
  * @author Eibe Frank (eibe@cs.waikato.ac.nz)
  * @author Len Trigg (len@reeltwo.com)
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
- * @version $Revision: 8034 $
+ * @version $Revision: 10649 $
  */
 public class MultiClassClassifier 
   extends RandomizableSingleClassifierEnhancer 
@@ -236,7 +237,7 @@ public class MultiClassClassifier
      * @return		the revision
      */
     public String getRevision() {
-      return RevisionUtils.extract("$Revision: 8034 $");
+      return RevisionUtils.extract("$Revision: 10649 $");
     }
   }
 
@@ -268,7 +269,7 @@ public class MultiClassClassifier
      * @return		the revision
      */
     public String getRevision() {
-      return RevisionUtils.extract("$Revision: 8034 $");
+      return RevisionUtils.extract("$Revision: 10649 $");
     }
   }
 
@@ -350,7 +351,7 @@ public class MultiClassClassifier
      * @return		the revision
      */
     public String getRevision() {
-      return RevisionUtils.extract("$Revision: 8034 $");
+      return RevisionUtils.extract("$Revision: 10649 $");
     }
   }
 
@@ -395,7 +396,7 @@ public class MultiClassClassifier
      * @return		the revision
      */
     public String getRevision() {
-      return RevisionUtils.extract("$Revision: 8034 $");
+      return RevisionUtils.extract("$Revision: 10649 $");
     }
   }
 
@@ -453,13 +454,13 @@ public class MultiClassClassifier
 
     } else if (m_Method == METHOD_1_AGAINST_1) {
       // generate fastvector of pairs
-      FastVector pairs = new FastVector();
+      ArrayList<int[] >pairs = new ArrayList<int[]>();
       for (int i=0; i<insts.numClasses(); i++) {
 	for (int j=0; j<insts.numClasses(); j++) {
 	  if (j<=i) continue;
 	  int[] pair = new int[2];
 	  pair[0] = i; pair[1] = j;
-	  pairs.addElement(pair);
+	  pairs.add(pair);
 	}
       }
 
@@ -474,7 +475,7 @@ public class MultiClassClassifier
 	classFilter.setAttributeIndex("" + (insts.classIndex() + 1));
 	classFilter.setModifyHeader(true);
 	classFilter.setInvertSelection(true);
-	classFilter.setNominalIndicesArr((int[])pairs.elementAt(i));
+	classFilter.setNominalIndicesArr((int[])pairs.get(i));
 	Instances tempInstances = new Instances(insts, 0);
 	tempInstances.setClassIndex(-1);
 	classFilter.setInputFormat(tempInstances);
@@ -494,11 +495,10 @@ public class MultiClassClassifier
       m_TwoClassDataset = new Instances(insts, 0);
       int classIndex = m_TwoClassDataset.classIndex();
       m_TwoClassDataset.setClassIndex(-1);
-      m_TwoClassDataset.deleteAttributeAt(classIndex);
-      FastVector classLabels = new FastVector();
-      classLabels.addElement("class0");
-      classLabels.addElement("class1");
-      m_TwoClassDataset.insertAttributeAt(new Attribute("class", classLabels),
+      ArrayList<String> classLabels = new ArrayList<String>();
+      classLabels.add("class0");
+      classLabels.add("class1");
+      m_TwoClassDataset.replaceAttributeAt(new Attribute("class", classLabels),
 					  classIndex);
       m_TwoClassDataset.setClassIndex(classIndex);
 
@@ -683,9 +683,9 @@ public class MultiClassClassifier
    *
    * @return an enumeration of all the available options
    */
-  public Enumeration listOptions()  {
+  public Enumeration<Option> listOptions()  {
 
-    Vector vec = new Vector(4);
+    Vector<Option> vec = new Vector<Option>(3);
     
     vec.addElement(new Option(
        "\tSets the method to use. Valid values are 0 (1-against-all),\n"
@@ -698,10 +698,8 @@ public class MultiClassClassifier
         "\tUse pairwise coupling (only has an effect for 1-against1)",
         "P", 0, "-P"));
 
-    Enumeration enu = super.listOptions();
-    while (enu.hasMoreElements()) {
-      vec.addElement(enu.nextElement());
-    }
+    vec.addAll(Collections.list(super.listOptions()));
+    
     return vec.elements();
   }
 
@@ -772,6 +770,8 @@ public class MultiClassClassifier
     setUsePairwiseCoupling(Utils.getFlag('P', options));
 
     super.setOptions(options);
+    
+    Utils.checkForRemainingOptions(options);
   }
 
   /**
@@ -781,30 +781,21 @@ public class MultiClassClassifier
    */
   public String [] getOptions() {
 
-    String [] superOptions = super.getOptions();
-    String [] options = new String [superOptions.length + 5];
-
-    int current = 0;
-
-
-    options[current++] = "-M";
-    options[current++] = "" + m_Method;
+    Vector<String> options = new Vector<String>();
+    
+    options.add("-M");
+    options.add("" + m_Method);
 
     if (getUsePairwiseCoupling()) {
-      options[current++] = "-P";
+        options.add("-P");
     }
     
-    options[current++] = "-R";
-    options[current++] = "" + m_RandomWidthFactor;
+    options.add("-R");
+    options.add("" + m_RandomWidthFactor);
 
-    System.arraycopy(superOptions, 0, options, current, 
-		     superOptions.length);
-
-    current += superOptions.length;
-    while (current < options.length) {
-      options[current++] = "";
-    }
-    return options;
+    Collections.addAll(options, super.getOptions());
+    
+    return options.toArray(new String[0]);
   }
 
   /**
@@ -984,7 +975,7 @@ public class MultiClassClassifier
    * @return		the revision
    */
   public String getRevision() {
-    return RevisionUtils.extract("$Revision: 8034 $");
+    return RevisionUtils.extract("$Revision: 10649 $");
   }
 
   /**

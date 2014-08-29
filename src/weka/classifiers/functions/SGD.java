@@ -22,6 +22,7 @@
 package weka.classifiers.functions;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Random;
 import java.util.Vector;
@@ -44,68 +45,60 @@ import weka.filters.unsupervised.attribute.Normalize;
 import weka.filters.unsupervised.attribute.ReplaceMissingValues;
 
 /**
- <!-- globalinfo-start --> 
- * Implements stochastic gradient descent for learning
- * various linear models (binary class SVM, binary class logistic regression,
- * squared loss, Huber loss and epsilon-insensitive loss linear regression).
- * Globally replaces all missing values and transforms nominal attributes into
- * binary ones. It also normalizes all attributes, so the coefficients in the
- * output are based on the normalized data.<br/>
- * For numeric class attributes, the squared, Huber or epsilon-insensitve loss
- * function must be used. Epsilon-insensitive and Huber loss may require a much
- * higher learning rate.
+ <!-- globalinfo-start -->
+ * Implements stochastic gradient descent for learning various linear models (binary class SVM, binary class logistic regression, squared loss, Huber loss and epsilon-insensitive loss linear regression). Globally replaces all missing values and transforms nominal attributes into binary ones. It also normalizes all attributes, so the coefficients in the output are based on the normalized data.<br/>
+ * For numeric class attributes, the squared, Huber or epsilon-insensitve loss function must be used. Epsilon-insensitive and Huber loss may require a much higher learning rate.
  * <p/>
  <!-- globalinfo-end -->
  * 
- <!-- options-start --> 
- * Valid options are:
- * <p/>
+ <!-- options-start -->
+ * Valid options are: <p/>
  * 
- * <pre>
- * -F
- *  Set the loss function to minimize. 0 = hinge loss (SVM), 1 = log loss (logistic regression),
- *  2 = squared loss (regression).
- *  (default = 0)
- * </pre>
+ * <pre> -F
+ *  Set the loss function to minimize.
+ *  0 = hinge loss (SVM), 1 = log loss (logistic regression),
+ *  2 = squared loss (regression), 3 = epsilon insensitive loss (regression),
+ *  4 = Huber loss (regression).
+ *  (default = 0)</pre>
  * 
- * <pre>
- * -L
+ * <pre> -L
  *  The learning rate. If normalization is
  *  turned off (as it is automatically for streaming data), then the
  *  default learning rate will need to be reduced (try 0.0001).
- *  (default = 0.01).
- * </pre>
+ *  (default = 0.01).</pre>
  * 
- * <pre>
- * -R &lt;double&gt;
- *  The lambda regularization constant (default = 0.0001)
- * </pre>
+ * <pre> -R &lt;double&gt;
+ *  The lambda regularization constant (default = 0.0001)</pre>
  * 
- * <pre>
- * -E &lt;integer&gt;
- *  The number of epochs to perform (batch learning only, default = 500)
- * </pre>
+ * <pre> -E &lt;integer&gt;
+ *  The number of epochs to perform (batch learning only, default = 500)</pre>
  * 
- * <pre>
- * -C &lt;double&gt;
- *  The epsilon threshold (epsilon-insenstive and Huber loss only, default = 1e-3)
- * </pre>
+ * <pre> -C &lt;double&gt;
+ *  The epsilon threshold (epsilon-insenstive and Huber loss only, default = 1e-3)</pre>
  * 
- * <pre>
- * -N
- *  Don't normalize the data
- * </pre>
+ * <pre> -N
+ *  Don't normalize the data</pre>
  * 
- * <pre>
- * -M
- *  Don't replace missing values
- * </pre>
+ * <pre> -M
+ *  Don't replace missing values</pre>
+ * 
+ * <pre> -S &lt;num&gt;
+ *  Random number seed.
+ *  (default 1)</pre>
+ * 
+ * <pre> -output-debug-info
+ *  If set, classifier is run in debug mode and
+ *  may output additional info to the console</pre>
+ * 
+ * <pre> -do-not-check-capabilities
+ *  If set, classifier capabilities are not checked before classifier is built
+ *  (use with caution).</pre>
  * 
  <!-- options-end -->
  * 
  * @author Eibe Frank (eibe{[at]}cs{[dot]}waikato{[dot]}ac{[dot]}nz)
  * @author Mark Hall (mhall{[at]}pentaho{[dot]}com)
- * @version $Revision: 9785 $
+ * @version $Revision: 10420 $
  * 
  */
 public class SGD extends RandomizableClassifier implements
@@ -433,6 +426,8 @@ public class SGD extends RandomizableClassifier implements
     newVector.add(new Option("\tDon't normalize the data", "N", 0, "-N"));
     newVector.add(new Option("\tDon't replace missing values", "M", 0, "-M"));
 
+    newVector.addAll(Collections.list(super.listOptions()));
+    
     return newVector.elements();
   }
 
@@ -441,49 +436,48 @@ public class SGD extends RandomizableClassifier implements
    * Parses a given list of options.
    * <p/>
    * 
-   <!-- options-start --> 
-   * Valid options are:
-   * <p/>
+   <!-- options-start -->
+   * Valid options are: <p/>
    * 
-   * <pre>
-   * -F
-   *  Set the loss function to minimize. 0 = hinge loss (SVM), 1 = log loss (logistic regression),
-   *  2 = squared loss (regression).
-   *  (default = 0)
-   * </pre>
+   * <pre> -F
+   *  Set the loss function to minimize.
+   *  0 = hinge loss (SVM), 1 = log loss (logistic regression),
+   *  2 = squared loss (regression), 3 = epsilon insensitive loss (regression),
+   *  4 = Huber loss (regression).
+   *  (default = 0)</pre>
    * 
-   * <pre>
-   * -L
+   * <pre> -L
    *  The learning rate. If normalization is
    *  turned off (as it is automatically for streaming data), then the
    *  default learning rate will need to be reduced (try 0.0001).
-   *  (default = 0.01).
-   * </pre>
+   *  (default = 0.01).</pre>
    * 
-   * <pre>
-   * -R &lt;double&gt;
-   *  The lambda regularization constant (default = 0.0001)
-   * </pre>
+   * <pre> -R &lt;double&gt;
+   *  The lambda regularization constant (default = 0.0001)</pre>
    * 
-   * <pre>
-   * -E &lt;integer&gt;
-   *  The number of epochs to perform (batch learning only, default = 500)
-   * </pre>
+   * <pre> -E &lt;integer&gt;
+   *  The number of epochs to perform (batch learning only, default = 500)</pre>
    * 
-   * <pre>
-   * -C &lt;double&gt;
-   *  The epsilon threshold (epsilon-insenstive and Huber loss only, default = 1e-3)
-   * </pre>
+   * <pre> -C &lt;double&gt;
+   *  The epsilon threshold (epsilon-insenstive and Huber loss only, default = 1e-3)</pre>
    * 
-   * <pre>
-   * -N
-   *  Don't normalize the data
-   * </pre>
+   * <pre> -N
+   *  Don't normalize the data</pre>
    * 
-   * <pre>
-   * -M
-   *  Don't replace missing values
-   * </pre>
+   * <pre> -M
+   *  Don't replace missing values</pre>
+   * 
+   * <pre> -S &lt;num&gt;
+   *  Random number seed.
+   *  (default 1)</pre>
+   * 
+   * <pre> -output-debug-info
+   *  If set, classifier is run in debug mode and
+   *  may output additional info to the console</pre>
+   * 
+   * <pre> -do-not-check-capabilities
+   *  If set, classifier capabilities are not checked before classifier is built
+   *  (use with caution).</pre>
    * 
    <!-- options-end -->
    * 
@@ -524,6 +518,8 @@ public class SGD extends RandomizableClassifier implements
 
     setDontNormalize(Utils.getFlag("N", options));
     setDontReplaceMissing(Utils.getFlag('M', options));
+    
+    Utils.checkForRemainingOptions(options);
   }
 
   /**
@@ -552,6 +548,8 @@ public class SGD extends RandomizableClassifier implements
       options.add("-M");
     }
 
+    Collections.addAll(options, super.getOptions());
+    
     return options.toArray(new String[1]);
   }
 
@@ -951,7 +949,7 @@ public class SGD extends RandomizableClassifier implements
    */
   @Override
   public String getRevision() {
-    return RevisionUtils.extract("$Revision: 9785 $");
+    return RevisionUtils.extract("$Revision: 10420 $");
   }
 
   protected int m_numModels = 0;
@@ -1019,3 +1017,4 @@ public class SGD extends RandomizableClassifier implements
     runClassifier(new SGD(), args);
   }
 }
+

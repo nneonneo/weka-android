@@ -158,8 +158,8 @@ public abstract class Logger
       if (trace[i].getClassName().equals(Logger.class.getName()))
 	continue;
       
-//      if (trace[i].getClassName().equals(weka.gui.LogPanel.class.getName()))
-//        continue;
+      if (trace[i].getClassName().equals(weka.gui.LogPanel.class.getName()))
+        continue;
       
       // fill in result
       result[0] = trace[i].getClassName();
