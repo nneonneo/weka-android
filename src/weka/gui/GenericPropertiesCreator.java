@@ -34,7 +34,6 @@ import java.util.Vector;
 import weka.core.ClassDiscovery;
 import weka.core.ClassDiscovery.StringCompare;
 import weka.core.Utils;
-import weka.core.WekaPackageManager;
 
 /**
  * This class can generate the properties object that is normally loaded from
@@ -157,8 +156,8 @@ public class GenericPropertiesCreator {
     try {
       GenericPropertiesCreator creator = new GenericPropertiesCreator();
       GLOBAL_CREATOR = creator;
-      if (creator.useDynamic()
-        && !WekaPackageManager.m_initialPackageLoadingInProcess) {
+      if (creator.useDynamic()/*
+          && !WekaPackageManager.m_initialPackageLoadingInProcess*/) {
         creator.execute(false, true);
         GLOBAL_INPUT_PROPERTIES = creator.getInputProperties();
         GLOBAL_OUTPUT_PROPERTIES = creator.getOutputProperties();

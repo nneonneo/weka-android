@@ -21,13 +21,9 @@
 
 package weka.clusterers;
 
-import java.beans.BeanInfo;
-import java.beans.Introspector;
-import java.beans.MethodDescriptor;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.Serializable;
-import java.lang.reflect.Method;
 import java.util.Enumeration;
 import java.util.Random;
 import java.util.Vector;
@@ -1192,22 +1188,22 @@ public class ClusterEvaluation implements Serializable, RevisionHandler {
    * @throws Exception if there is a problem reflecting on the clusterer
    */
   protected static String getGlobalInfo(Clusterer clusterer) throws Exception {
-    BeanInfo bi = Introspector.getBeanInfo(clusterer.getClass());
-    MethodDescriptor[] methods;
-    methods = bi.getMethodDescriptors();
-    Object[] args = {};
+//    BeanInfo bi = Introspector.getBeanInfo(clusterer.getClass());
+//    MethodDescriptor[] methods;
+//    methods = bi.getMethodDescriptors();
+//    Object[] args = {};
     String result = "\nSynopsis for " + clusterer.getClass().getName()
       + ":\n\n";
 
-    for (MethodDescriptor method : methods) {
-      String name = method.getDisplayName();
-      Method meth = method.getMethod();
-      if (name.equals("globalInfo")) {
-        String globalInfo = (String) (meth.invoke(clusterer, args));
-        result += globalInfo;
-        break;
-      }
-    }
+//    for (MethodDescriptor method : methods) {
+//      String name = method.getDisplayName();
+//      Method meth = method.getMethod();
+//      if (name.equals("globalInfo")) {
+//        String globalInfo = (String) (meth.invoke(clusterer, args));
+//        result += globalInfo;
+//        break;
+//      }
+//    }
 
     return result;
   }

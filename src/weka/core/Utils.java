@@ -21,17 +21,9 @@
 
 package weka.core;
 
-import java.beans.BeanInfo;
-import java.beans.Introspector;
-import java.beans.MethodDescriptor;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.lang.reflect.Array;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.text.BreakIterator;
 import java.util.Enumeration;
@@ -41,7 +33,6 @@ import java.util.Random;
 import java.util.Vector;
 
 import weka.Run;
-import weka.gui.PropertySheetPanel;
 
 /**
  * Class implementing some simple utility methods.
@@ -146,23 +137,23 @@ public final class Utils implements RevisionHandler {
     // Allow a properties file in the WekaPackageManager.PROPERTIES_DIR to
     // override
     Properties userProps = new Properties(defaultProps);
-    if (!WekaPackageManager.PROPERTIES_DIR.exists()) {
-      WekaPackageManager.PROPERTIES_DIR.mkdir();
-    }
-    File propFile = new File(WekaPackageManager.PROPERTIES_DIR.toString()
-      + File.separator + resourceName);
-
-    if (propFile.exists()) {
-      try {
-        userProps.load(new FileInputStream(propFile));
-      } catch (Exception ex) {
-        throw new Exception("Problem reading user properties: " + propFile);
-      }
-    }
+//    if (!WekaPackageManager.PROPERTIES_DIR.exists()) {
+//      WekaPackageManager.PROPERTIES_DIR.mkdir();
+//    }
+//    File propFile = new File(WekaPackageManager.PROPERTIES_DIR.toString()
+//      + File.separator + resourceName);
+//
+//    if (propFile.exists()) {
+//      try {
+//        userProps.load(new FileInputStream(propFile));
+//      } catch (Exception ex) {
+//        throw new Exception("Problem reading user properties: " + propFile);
+//      }
+//    }
 
     // Allow a properties file in the current directory to override
     Properties localProps = new Properties(userProps);
-    propFile = new File(resourceName);
+    File propFile = new File(resourceName);
     if (propFile.exists()) {
       try {
         localProps.load(new FileInputStream(propFile));
@@ -2092,22 +2083,23 @@ public final class Utils implements RevisionHandler {
    *         future.
    */
   public static boolean getDontShowDialog(String dialogName) {
-    File wekaHome = WekaPackageManager.WEKA_HOME;
-
-    if (!wekaHome.exists()) {
-      return false;
-    }
-
-    File dialogSubDir = new File(wekaHome.toString() + File.separator
-      + "systemDialogs");
-    if (!dialogSubDir.exists()) {
-      return false;
-    }
-
-    File dialogFile = new File(dialogSubDir.toString() + File.separator
-      + dialogName);
-
-    return dialogFile.exists();
+	  return true;
+//    File wekaHome = WekaPackageManager.WEKA_HOME;
+//
+//    if (!wekaHome.exists()) {
+//      return false;
+//    }
+//
+//    File dialogSubDir = new File(wekaHome.toString() + File.separator
+//      + "systemDialogs");
+//    if (!dialogSubDir.exists()) {
+//      return false;
+//    }
+//
+//    File dialogFile = new File(dialogSubDir.toString() + File.separator
+//      + dialogName);
+//
+//    return dialogFile.exists();
   }
 
   /**
@@ -2120,23 +2112,23 @@ public final class Utils implements RevisionHandler {
    *           $WEKA_HOME/systemDialogs
    */
   public static void setDontShowDialog(String dialogName) throws Exception {
-    File wekaHome = WekaPackageManager.WEKA_HOME;
-
-    if (!wekaHome.exists()) {
-      return;
-    }
-
-    File dialogSubDir = new File(wekaHome.toString() + File.separator
-      + "systemDialogs");
-    if (!dialogSubDir.exists()) {
-      if (!dialogSubDir.mkdir()) {
-        return;
-      }
-    }
-
-    File dialogFile = new File(dialogSubDir.toString() + File.separator
-      + dialogName);
-    dialogFile.createNewFile();
+//    File wekaHome = WekaPackageManager.WEKA_HOME;
+//
+//    if (!wekaHome.exists()) {
+//      return;
+//    }
+//
+//    File dialogSubDir = new File(wekaHome.toString() + File.separator
+//      + "systemDialogs");
+//    if (!dialogSubDir.exists()) {
+//      if (!dialogSubDir.mkdir()) {
+//        return;
+//      }
+//    }
+//
+//    File dialogFile = new File(dialogSubDir.toString() + File.separator
+//      + dialogName);
+//    dialogFile.createNewFile();
   }
 
   /**
@@ -2152,19 +2144,20 @@ public final class Utils implements RevisionHandler {
    */
   public static String getDontShowDialogResponse(String dialogName)
     throws Exception {
-    if (!getDontShowDialog(dialogName)) {
-      return null; // This must be the first time - no file recorded yet.
-    }
-
-    File wekaHome = WekaPackageManager.WEKA_HOME;
-    File dialogSubDir = new File(wekaHome.toString() + File.separator
-      + "systemDialogs" + File.separator + dialogName);
-
-    BufferedReader br = new BufferedReader(new FileReader(dialogSubDir));
-    String response = br.readLine();
-
-    br.close();
-    return response;
+	  return null;
+//    if (!getDontShowDialog(dialogName)) {
+//      return null; // This must be the first time - no file recorded yet.
+//    }
+//
+//    File wekaHome = WekaPackageManager.WEKA_HOME;
+//    File dialogSubDir = new File(wekaHome.toString() + File.separator
+//      + "systemDialogs" + File.separator + dialogName);
+//
+//    BufferedReader br = new BufferedReader(new FileReader(dialogSubDir));
+//    String response = br.readLine();
+//
+//    br.close();
+//    return response;
   }
 
   /**
@@ -2177,27 +2170,27 @@ public final class Utils implements RevisionHandler {
    */
   public static void setDontShowDialogResponse(String dialogName,
     String response) throws Exception {
-
-    File wekaHome = WekaPackageManager.WEKA_HOME;
-
-    if (!wekaHome.exists()) {
-      return;
-    }
-
-    File dialogSubDir = new File(wekaHome.toString() + File.separator
-      + "systemDialogs");
-    if (!dialogSubDir.exists()) {
-      if (!dialogSubDir.mkdir()) {
-        return;
-      }
-    }
-
-    File dialogFile = new File(dialogSubDir.toString() + File.separator
-      + dialogName);
-    BufferedWriter br = new BufferedWriter(new FileWriter(dialogFile));
-    br.write(response + "\n");
-    br.flush();
-    br.close();
+//
+//    File wekaHome = WekaPackageManager.WEKA_HOME;
+//
+//    if (!wekaHome.exists()) {
+//      return;
+//    }
+//
+//    File dialogSubDir = new File(wekaHome.toString() + File.separator
+//      + "systemDialogs");
+//    if (!dialogSubDir.exists()) {
+//      if (!dialogSubDir.mkdir()) {
+//        return;
+//      }
+//    }
+//
+//    File dialogFile = new File(dialogSubDir.toString() + File.separator
+//      + dialogName);
+//    BufferedWriter br = new BufferedWriter(new FileWriter(dialogFile));
+//    br.write(response + "\n");
+//    br.flush();
+//    br.close();
   }
 
   /**
@@ -2267,24 +2260,24 @@ public final class Utils implements RevisionHandler {
     // set tool tip text from global info if supplied
     String gi = null;
     StringBuilder result = new StringBuilder();
-    try {
-      BeanInfo bi = Introspector.getBeanInfo(object.getClass());
-      MethodDescriptor[] methods = bi.getMethodDescriptors();
-      for (MethodDescriptor method : methods) {
-        String name = method.getDisplayName();
-        Method meth = method.getMethod();
-        if (name.equals("globalInfo")) {
-          if (meth.getReturnType().equals(String.class)) {
-            Object args[] = {};
-            String globalInfo = (String) (meth.invoke(object, args));
-            gi = globalInfo;
-            break;
-          }
-        }
-      }
-    } catch (Exception ex) {
-
-    }
+//    try {
+//      BeanInfo bi = Introspector.getBeanInfo(object.getClass());
+//      MethodDescriptor[] methods = bi.getMethodDescriptors();
+//      for (MethodDescriptor method : methods) {
+//        String name = method.getDisplayName();
+//        Method meth = method.getMethod();
+//        if (name.equals("globalInfo")) {
+//          if (meth.getReturnType().equals(String.class)) {
+//            Object args[] = {};
+//            String globalInfo = (String) (meth.invoke(object, args));
+//            gi = globalInfo;
+//            break;
+//          }
+//        }
+//      }
+//    } catch (Exception ex) {
+//
+//    }
 
     // Max. number of characters per line (may overflow)
     int lineWidth = 180;
@@ -2320,28 +2313,28 @@ public final class Utils implements RevisionHandler {
       result.append("<br>");
     }
 
-    if (addCapabilities) {
-      if (object instanceof CapabilitiesHandler) {
-        if (!result.toString().endsWith("<br><br>")) {
-          result.append("<br>");
-        }
-        String caps = PropertySheetPanel.addCapabilities(
-          "<font color=red>CAPABILITIES</font>",
-          ((CapabilitiesHandler) object).getCapabilities());
-        caps = Utils.lineWrap(caps, lineWidth).replace("\n", "<br>");
-        result.append(caps);
-      }
-
-      if (object instanceof MultiInstanceCapabilitiesHandler) {
-        result.append("<br>");
-        String caps = PropertySheetPanel.addCapabilities(
-          "<font color=red>MI CAPABILITIES</font>",
-          ((MultiInstanceCapabilitiesHandler) object)
-            .getMultiInstanceCapabilities());
-        caps = Utils.lineWrap(caps, lineWidth).replace("\n", "<br>");
-        result.append(caps);
-      }
-    }
+//    if (addCapabilities) {
+//      if (object instanceof CapabilitiesHandler) {
+//        if (!result.toString().endsWith("<br><br>")) {
+//          result.append("<br>");
+//        }
+//        String caps = PropertySheetPanel.addCapabilities(
+//          "<font color=red>CAPABILITIES</font>",
+//          ((CapabilitiesHandler) object).getCapabilities());
+//        caps = Utils.lineWrap(caps, lineWidth).replace("\n", "<br>");
+//        result.append(caps);
+//      }
+//
+//      if (object instanceof MultiInstanceCapabilitiesHandler) {
+//        result.append("<br>");
+//        String caps = PropertySheetPanel.addCapabilities(
+//          "<font color=red>MI CAPABILITIES</font>",
+//          ((MultiInstanceCapabilitiesHandler) object)
+//            .getMultiInstanceCapabilities());
+//        caps = Utils.lineWrap(caps, lineWidth).replace("\n", "<br>");
+//        result.append(caps);
+//      }
+//    }
 
     result.append("</html>");
 

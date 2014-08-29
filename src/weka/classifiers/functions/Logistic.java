@@ -26,7 +26,6 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 import weka.classifiers.AbstractClassifier;
-import weka.classifiers.pmml.producer.LogisticProducerHelper;
 import weka.core.Aggregateable;
 import weka.core.Capabilities;
 import weka.core.Capabilities.Capability;
@@ -1143,7 +1142,8 @@ public class Logistic extends AbstractClassifier implements OptionHandler,
    */
   @Override
   public String toPMML(Instances train) {
-    return LogisticProducerHelper.toPMML(train, m_structure, m_Par,
-      m_NumClasses);
+	  return "";
+//    return LogisticProducerHelper.toPMML(train, m_structure, m_Par,
+//      m_NumClasses);
   }
 }

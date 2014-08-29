@@ -37,7 +37,6 @@ import weka.core.Capabilities.Capability;
 import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
-import weka.core.MathematicalExpression;
 import weka.core.Option;
 import weka.core.OptionHandler;
 import weka.core.RevisionUtils;
@@ -787,8 +786,8 @@ public class KernelFilter extends SimpleBatchFilter implements
     symbols = new HashMap<String, Double>();
     symbols.put("A", new Double(instances.numAttributes()));
     symbols.put("N", new Double(instances.numInstances()));
-    m_KernelFactor = MathematicalExpression.evaluate(
-      getKernelFactorExpression(), symbols);
+//    m_KernelFactor = MathematicalExpression.evaluate(
+//      getKernelFactorExpression(), symbols);
 
     // init filters
     if (!m_checksTurnedOff) {

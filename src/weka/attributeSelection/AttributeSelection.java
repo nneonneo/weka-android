@@ -21,12 +21,7 @@
 
 package weka.attributeSelection;
 
-import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
 import java.io.Serializable;
-import java.lang.reflect.Method;
 import java.util.Enumeration;
 import java.util.Random;
 
@@ -612,30 +607,30 @@ public class AttributeSelection implements Serializable, RevisionHandler {
     // try and determine if the search method uses an attribute transformer---
     // this is a bit of a hack to make things work properly with RankSearch
     // using PrincipalComponents as its attribute ranker
-    try {
-      BeanInfo bi = Introspector.getBeanInfo(m_searchMethod.getClass());
-      PropertyDescriptor properties[];
-      // methods = bi.getMethodDescriptors();
-      properties = bi.getPropertyDescriptors();
-      for (PropertyDescriptor propertie : properties) {
-        propertie.getDisplayName();
-        Method meth = propertie.getReadMethod();
-        Object retType = meth.getReturnType();
-        if (retType.equals(ASEvaluation.class)) {
-          Class<?> args[] = {};
-          ASEvaluation tempEval = (ASEvaluation) (meth.invoke(m_searchMethod,
-            (Object[]) args));
-          if (tempEval instanceof AttributeTransformer) {
-            // grab the transformed data header
-            m_trainInstances = ((AttributeTransformer) tempEval)
-              .transformedHeader();
-            m_transformer = (AttributeTransformer) tempEval;
-          }
-        }
-      }
-    } catch (IntrospectionException ex) {
-      System.err.println("AttributeSelection: Couldn't " + "introspect");
-    }
+//    try {
+//      BeanInfo bi = Introspector.getBeanInfo(m_searchMethod.getClass());
+//      PropertyDescriptor properties[];
+//      // methods = bi.getMethodDescriptors();
+//      properties = bi.getPropertyDescriptors();
+//      for (PropertyDescriptor propertie : properties) {
+//        propertie.getDisplayName();
+//        Method meth = propertie.getReadMethod();
+//        Object retType = meth.getReturnType();
+//        if (retType.equals(ASEvaluation.class)) {
+//          Class<?> args[] = {};
+//          ASEvaluation tempEval = (ASEvaluation) (meth.invoke(m_searchMethod,
+//            (Object[]) args));
+//          if (tempEval instanceof AttributeTransformer) {
+//            // grab the transformed data header
+//            m_trainInstances = ((AttributeTransformer) tempEval)
+//              .transformedHeader();
+//            m_transformer = (AttributeTransformer) tempEval;
+//          }
+//        }
+//      }
+//    } catch (IntrospectionException ex) {
+//      System.err.println("AttributeSelection: Couldn't " + "introspect");
+//    }
 
     // Do any postprocessing that a attribute selection method might require
     attributeSet = m_ASEvaluator.postProcess(attributeSet);
